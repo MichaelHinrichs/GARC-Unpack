@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Diagnostics;
 
 namespace Pack
 {
@@ -24,7 +18,7 @@ namespace Pack
             string path = files[0]; // open first D&D
 
             if ((File.GetAttributes(path) & FileAttributes.Directory) == FileAttributes.Directory)
-                pack(files[0]);
+                Pack(files[0]);
             else
             {
                 textBox1.Text = path;
@@ -127,7 +121,7 @@ namespace Pack
                     bw.Write(br.ReadByte());
                 }
                 bw.Flush(); bw.Close();
-                printout("\r\nWrote to " + fileout);
+                Printout("\r\nWrote to " + fileout);
 
                 // See if decompression should be attempted.
                 if (compressed && !CHK_SkipDecompress.Checked)
@@ -137,7 +131,7 @@ namespace Pack
 
                     if (result != null)
                     {
-                        printout("\r\n" + result);
+                        Printout("\r\n" + result);
                         if (CHK_delAfterD.Checked)
                         {
                             try { File.Delete(fileout); }
@@ -153,7 +147,7 @@ namespace Pack
             RTB.Select(RTB.Text.Length - 1, 0);
             RTB.ScrollToCaret();
         }
-        private void printout(string str)
+        private void Printout(string str)
         {
             if (CHK_NoPrint.Checked) 
                 return;
@@ -185,7 +179,7 @@ namespace Pack
             Array.Reverse(charArray);
             return charArray;
         }
-        private void clearTextbox(object sender, EventArgs e)
+        private void ClearTextbox(object sender, EventArgs e)
         {
             RTB.Clear();
         }
@@ -200,7 +194,7 @@ namespace Pack
         }
 
 
-        private void pack(string path)
+        private void Pack(string path)
         {
             string[] filepaths = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly);
 
@@ -380,14 +374,14 @@ namespace Pack
     public struct GARC
     {
         public char[] id;           // Always GARC = 0x4E415243
-        public UInt32 header_size;  // Always 0x001C
-        public UInt16 id_endian;    // 0xFFFE
-        public UInt16 constant;     // Always 0x0400 chunk count
-        public UInt32 file_size;
+        public uint header_size;  // Always 0x001C
+        public ushort id_endian;    // 0xFFFE
+        public ushort constant;     // Always 0x0400 chunk count
+        public uint file_size;
 
-        public UInt32 data_offset;
-        public UInt32 file_length;
-        public UInt32 lastsize;
+        public uint data_offset;
+        public uint file_length;
+        public uint lastsize;
 
         public OTAF otaf;
         public BTAF btaf;
@@ -396,9 +390,9 @@ namespace Pack
     public struct OTAF
     {
         public char[] id;
-        public UInt32 section_size;
-        public UInt16 nFiles;
-        public UInt16 padding;
+        public uint section_size;
+        public ushort nFiles;
+        public ushort padding;
 
         public OTAF_Entry[] entries;
     }
@@ -409,22 +403,22 @@ namespace Pack
     public struct BTAF
     {
         public char[] id;
-        public UInt32 section_size;
-        public UInt32 nFiles;
+        public uint section_size;
+        public uint nFiles;
         public BTAF_Entry[] entries;
     }
     public struct BTAF_Entry
     {
-        public UInt32 bits;
-        public UInt32 start_offset;
-        public UInt32 end_offset;
-        public UInt32 length;
+        public uint bits;
+        public uint start_offset;
+        public uint end_offset;
+        public uint length;
     }
     public struct GMIF
     {
         public char[] id;
-        public UInt32 section_size;
-        public UInt32 data_size;
+        public uint section_size;
+        public uint data_size;
     }
     #endregion
     #endregion
