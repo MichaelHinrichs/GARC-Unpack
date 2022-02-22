@@ -226,6 +226,7 @@ namespace Pack
             gw.Write((uint)0x46415442); // BTAF
             gw.Write((uint)(0xC + 0x10 * filepaths.Length)); // Chunk Size
             gw.Write((uint)filepaths.Length);
+            gw.Write((uint)1);          // garc.btaf.bits = br.ReadUInt32();
 
             uint offset = 0;
             uint largest = 0;
@@ -234,7 +235,6 @@ namespace Pack
                 FileInfo fi = new FileInfo(filepaths[i]);
                 using (FileStream fileStream = new FileStream(filepaths[i], FileMode.Open))
                 {
-                    gw.Write((uint)1);          // garc.btaf.entries[i].bits = br.ReadUInt32();
                     gw.Write((uint)offset);     // Start/Begin Offset
                     offset += (uint)((4 - fi.Length % 4) + fi.Length);
                     gw.Write((uint)offset);     // End/Stop Offset
@@ -358,12 +358,11 @@ namespace Pack
                 garc.btaf.entries[i].end_offset = br.ReadUInt32();
                 garc.btaf.entries[i].length = br.ReadUInt32();
             }
-            uint unknown = br.ReadUInt32();
 
             // BMIF
-            garc.gmif.id = br.ReadChars(4);
-            garc.gmif.section_size = br.ReadUInt32();
-            garc.gmif.data_size = br.ReadUInt32();
+            garc.bmif.id = br.ReadChars(4);
+            garc.bmif.section_size = br.ReadUInt32();
+            garc.bmif.data_size = br.ReadUInt32();
 
             // Files data
 
@@ -386,7 +385,7 @@ namespace Pack
 
         public OTAF otaf;
         public BTAF btaf;
-        public GMIF gmif;
+        public GMIF bmif;
     }
     public struct OTAF
     {
