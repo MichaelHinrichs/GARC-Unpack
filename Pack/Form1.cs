@@ -69,9 +69,9 @@ namespace Pack
 
             // Unpack the GARC
             GARC garc = ARC.Unpack(textBox1.Text);
-            RTB.Text += "\r\nCount: " + garc.otaf.nFiles;
-            ProgressInit(garc.otaf.nFiles);
-            if (garc.otaf.nFiles > 50)
+            RTB.Text += "\r\nCount: " + garc.btaf.nFiles;
+            ProgressInit((int)garc.btaf.nFiles);
+            if (garc.btaf.nFiles > 50)
             {
                 CHK_NoPrint.Checked = true;
             }
@@ -90,7 +90,7 @@ namespace Pack
             }
             
             // Pull out all the files
-            for (int i = 0; i < garc.otaf.nFiles; i++)
+            for (int i = 0; i < garc.btaf.nFiles; i++)
             {
                 string ext = "bin";
                 bool compressed = false;
@@ -110,7 +110,7 @@ namespace Pack
                 catch { newext = null; }
                 
                 // Set File Name
-                string filename = i.ToString("D" + Math.Ceiling(Math.Log10(garc.otaf.nFiles)));
+                string filename = i.ToString("D" + Math.Ceiling(Math.Log10(garc.btaf.nFiles)));
                 string fileout = basepath + "\\" + filename + "." + ext;
                 BinaryWriter bw = new BinaryWriter(File.OpenWrite(fileout));
                 
@@ -349,15 +349,16 @@ namespace Pack
             garc.btaf.id = br.ReadChars(4);
             garc.btaf.section_size = br.ReadUInt32();
             garc.btaf.nFiles = br.ReadUInt32();
+            garc.btaf.bits = br.ReadUInt32();
 
             garc.btaf.entries = new BTAF_Entry[garc.btaf.nFiles];
             for (int i = 0; i < garc.btaf.nFiles; i++)
             {
-                garc.btaf.entries[i].bits = br.ReadUInt32();
                 garc.btaf.entries[i].start_offset = br.ReadUInt32();
                 garc.btaf.entries[i].end_offset = br.ReadUInt32();
                 garc.btaf.entries[i].length = br.ReadUInt32();
             }
+            uint unknown = br.ReadUInt32();
 
             // BMIF
             garc.gmif.id = br.ReadChars(4);
@@ -405,11 +406,11 @@ namespace Pack
         public char[] id;
         public uint section_size;
         public uint nFiles;
+        public uint bits;
         public BTAF_Entry[] entries;
     }
     public struct BTAF_Entry
     {
-        public uint bits;
         public uint start_offset;
         public uint end_offset;
         public uint length;
